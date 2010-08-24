@@ -69,12 +69,7 @@ module FFMpeg
   #
   def run
     @@ffmpeg_path ||= locate_ffmpeg
-    unless @@ffmpeg_path.empty?
-      execute_command FFMpegCommand.command(@@ffmpeg_path)
-    else
-      $stderr.puts "Couldn't locate ffmpeg, try to specify an explicit path
-                    with the ffmpeg_path(path) method"
-    end
+    execute_command FFMpegCommand.command(@@ffmpeg_path)
   end
   
   private
@@ -108,6 +103,10 @@ module FFMpeg
   #
   def locate_ffmpeg
     ffmpeg_executable = %x[which ffmpeg].strip
+    unless ffmpeg_executable
+      raise RuntimeError, "Couldn't locate ffmpeg. Please specify an explicit path with the ffmpeg_path=(path) method"
+    end
+    ffmpeg_executable
   end
   
   #
