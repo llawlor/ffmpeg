@@ -53,9 +53,9 @@ module FFMpeg
   #
   # Runs ffmpeg
   #
-  def run
+  def run(verbose = true)
     @@ffmpeg_path ||= locate_ffmpeg
-    execute_command FFMpegCommand.command(@@ffmpeg_path)
+    execute_command(FFMpegCommand.command(@@ffmpeg_path), verbose)
   end
   
   private
