@@ -84,7 +84,7 @@ module FFMpeg
   # Executes FFmpeg with the specified command
   #
   def execute_command(cmd, verbose = true)
-    puts "Executing: #{cmd}}" if verbose
+    puts "Executing: #{cmd}" if verbose
     cmd += " > /dev/null 2>&1" if verbose
     %x[#{cmd}]
     success = $?.success?
