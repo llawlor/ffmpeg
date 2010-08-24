@@ -22,15 +22,6 @@ module FFMpeg
   #
   def self.included(klass)
     klass.extend ClassMethods
-    
-    #
-    # Everytime a method is added to the
-    # class, check for conflicts with existing
-    # module methods
-    #
-    def klass.method_added(name)
-      check_method(name) if method_checking_enabled?
-    end
   end
   
   #
@@ -45,12 +36,7 @@ module FFMpeg
   def convert(from_file, to_file = {})
     FFMpegCommand.clear
     FFMpegCommand << "-i #{from_file}"
-    begin
-      yield if block_given?
-    rescue Exception => exception
-      disable_method_checking!
-      raise exception
-    end
+    yield if block_given?
     
     build_output_file_name(from_file, to_file[:to]) do |file_name|
       FFMpegCommand << file_name
@@ -81,21 +67,6 @@ module FFMpeg
     else
       yield "#{to_file}"
     end
-  end
-
-  #
-  # Checks if the thread local varialble 'method checking disabled'
-  # is true or false
-  #
-  def method_checking_enabled?
-    !Thread.current[:'method checking disabled']
-  end
-  
-  #
-  # Turns off the method checking functionality
-  #
-  def disable_method_checking!
-    Thread.current[:'method checking disabled'] = true
   end
 
   #
