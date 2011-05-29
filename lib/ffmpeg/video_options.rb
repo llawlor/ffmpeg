@@ -193,5 +193,15 @@ module FFMpeg
     def new_video
       FFMpegCommand << "-newvideo"
     end
+    
+    # Use a video preset
+    def video_preset(name)
+      FFMpegCommand << "-vpre #{name}"
+    end
+    
+    # Use a file preset
+    def file_preset(name)
+      FFMpegCommand << "-fpre #{name}"
+    end
   end
 end

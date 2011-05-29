@@ -197,4 +197,22 @@ describe "FFMpeg Video Options" do
     
     FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file} -newvideo #{@to_file}")
   end
+  
+  
+  it "should set the video preset that we'd like to use" do
+    convert @from_file, :to => @to_file do
+      video_codec "x264"
+      video_preset "baseline"
+    end
+    
+    FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file} -vcodec x264 -vpre baseline #{@to_file}")
+  end
+
+  it "should set the file preset that we'd like to use" do
+    convert @from_file, :to => @to_file do
+      file_preset "baseline.ffpreset"
+    end
+    
+    FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file} -fpre baseline.ffpreset #{@to_file}")
+  end
 end

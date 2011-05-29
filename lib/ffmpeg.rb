@@ -7,6 +7,7 @@ require 'ffmpeg/audio_options'
 require 'ffmpeg/ffmpeg_command'
 require 'ffmpeg/helper_methods'
 require 'ffmpeg/meta_data'
+require 'ffmpeg/presets'
 
 module FFMpeg
   include HelperMethods
@@ -33,12 +34,19 @@ module FFMpeg
   #    resolution "800x600"
   #  end
   #
-  def convert(from_file, to_file = {})
+  def convert(from_file, opts = {})
     FFMpegCommand.clear
     FFMpegCommand << "-i #{from_file}"
+
+    Presets[opts[:preset]][:block].call if opts[:preset]
+
     yield if block_given?
     
-    build_output_file_name(from_file, to_file[:to]) do |file_name|
+    if opts[:preset] && !opts[:to]
+      opts[:to] = Presets[opts[:preset]][:extension]
+    end
+
+    build_output_file_name(from_file, opts[:to]) do |file_name|
       FFMpegCommand << file_name
     end
   end
@@ -50,10 +58,14 @@ module FFMpeg
     @@ffmpeg_path = path
   end
 
+  def ffmpeg_path
+    @@ffmpeg_path ||= locate_ffmpeg
+  end
+
   #
   # Runs ffmpeg
   #
-  def run(verbose = true)
+  def run(verbose = false)
     @@ffmpeg_path ||= locate_ffmpeg
     execute_command(FFMpegCommand.command(@@ffmpeg_path), verbose)
   end

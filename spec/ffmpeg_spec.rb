@@ -31,6 +31,19 @@ describe "FFMpeg" do
     FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file}")
   end
   
+  it "should generate a valid command when fed only a preset" do
+    FFMpeg::Presets.define(:ipod, :mp4) {}
+    convert(@from_file, :preset => :ipod)
+    
+    FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file} #{@to_file_from_mp4_shortcut}")
+  end
+
+  it "should generate a valid command when fed a preset and a :to" do
+    FFMpeg::Presets.define(:ipod, :mp4) {}
+    convert(@from_file, :to => @to_file, :preset => :ipod)
+   
+    FFMpegCommand.command("ffmpeg").should eql("ffmpeg -i #{@from_file} #{@to_file}")
+  end
 end
 
 describe "FFMpeg Main Options" do
