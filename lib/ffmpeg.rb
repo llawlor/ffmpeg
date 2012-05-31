@@ -16,15 +16,15 @@ module FFMpeg
   include VideoAdvancedOptions
   include AudioOptions
   include MetaData
-  
+
   #
-  # When mixed into a class, extend  
+  # When mixed into a class, extend
   # it with the ClassMethods module
   #
   def self.included(klass)
     klass.extend ClassMethods
   end
-  
+
   #
   # Sets up an FFmpegCommand for converting files:
   #
@@ -41,7 +41,7 @@ module FFMpeg
     Presets[opts[:preset]][:block].call if opts[:preset]
 
     yield if block_given?
-    
+
     if opts[:preset] && !opts[:to]
       opts[:to] = Presets[opts[:preset]][:extension]
     end
@@ -50,7 +50,7 @@ module FFMpeg
       FFMpegCommand << file_name
     end
   end
-  
+
   #
   # Explicitly set ffmpeg path
   #
@@ -69,9 +69,9 @@ module FFMpeg
     @@ffmpeg_path ||= locate_ffmpeg
     execute_command(FFMpegCommand.command(@@ffmpeg_path), verbose)
   end
-  
+
   private
-  
+
   def build_output_file_name(from_file, to_file)
     return if to_file.nil?
     if FileExtensions::EXT.include?(to_file.to_s)
@@ -91,7 +91,7 @@ module FFMpeg
     end
     ffmpeg_executable
   end
-  
+
   #
   # Executes FFmpeg with the specified command
   #
@@ -104,3 +104,4 @@ module FFMpeg
     success
   end
 end
+
