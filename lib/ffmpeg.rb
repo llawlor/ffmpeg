@@ -54,8 +54,7 @@ module FFMpeg
   # Add a thumbnail for the video
   def add_thumbnail(from_file, to_file, width=480, height=360, frame=1)
     @@ffmpeg_path ||= locate_ffmpeg
-    puts "path: #{@@ffmpeg_path}"
-    execute_command("#{@@ffmpeg_path} -i #{from_file} -vf thumbnail,scale=#{width}:#{height} -frames:v #{frame} #{to_file}", false)
+    execute_command("#{@@ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
   end
 
   #
