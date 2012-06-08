@@ -26,7 +26,7 @@ module FFMpeg
   end
 
   #
-  # Sets up an FFmpegCommand for converting files:
+  # Runs an FFmpegCommand for converting files:
   #
   #  convert "file1.ext", :to => "file2.ext" do
   #    seek       "00:03:00"
@@ -49,6 +49,12 @@ module FFMpeg
     build_output_file_name(from_file, opts[:to]) do |file_name|
       FFMpegCommand << file_name
     end
+
+    # run the command
+    execute_command("#{ffmpeg_path} #{FFMpegCommand.command}", opts[:verbose])
+
+    # return the metadata in json format
+    return `exiftool -n -j #{opts[:to]}`
   end
 
   # Add a thumbnail for the video
@@ -66,14 +72,6 @@ module FFMpeg
 
   def ffmpeg_path
     @@ffmpeg_path ||= locate_ffmpeg
-  end
-
-  #
-  # Runs ffmpeg
-  #
-  def run(verbose = false)
-    @@ffmpeg_path ||= locate_ffmpeg
-    execute_command("#{@@ffmpeg_path} #{FFMpegCommand.command}", verbose)
   end
 
   private
