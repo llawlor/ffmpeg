@@ -64,22 +64,22 @@ module FFMpeg
     def resolution(resolution)
       FFMpegCommand << "-s #{resolution}"
     end
-    
+
     # Set the video bitrate in bit/s (default = 200 kb/s or '200k').
     def video_bitrate(bitrate)
       FFMpegCommand << "-vb #{bitrate}"
     end
-    
+
     # Set the number of video frames to record.
     def video_frames(number)
       FFMpegCommand << "-vframes #{number}"
     end
-    
+
     # Set frame rate (Hz value, fraction or abbreviation), (default = 25).
     def framerate(fps)
       FFMpegCommand << "-r #{fps}"
     end
-    
+
     # Set aspect ratio (4:3, 16:9 or 1.3333, 1.7777).
     def aspect(aspect)
       FFMpegCommand << "-aspect #{aspect}"
@@ -167,9 +167,10 @@ module FFMpeg
       FFMpegCommand << "-vcodec #{codec}"
     end
 
-    # Use same video quality as source (implies VBR).
-    def same_video_quality
-      FFMpegCommand << "-sameq"
+    # Use same quantizer as source (implies VBR).
+    # Note that this is NOT SAME QUALITY. Do not use this option unless you know you need it.
+    def same_video_quantifier
+      FFMpegCommand << "-same_quant"
     end
 
     # Select the pass number (1 or 2). It is used to do two-pass video encoding. The statistics of the video are
@@ -193,15 +194,16 @@ module FFMpeg
     def new_video
       FFMpegCommand << "-newvideo"
     end
-    
+
     # Use a video preset
     def video_preset(name)
       FFMpegCommand << "-vpre #{name}"
     end
-    
+
     # Use a file preset
     def file_preset(name)
       FFMpegCommand << "-fpre #{name}"
     end
   end
 end
+
