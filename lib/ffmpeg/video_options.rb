@@ -67,7 +67,7 @@ module FFMpeg
 
     # Set the video bitrate in bit/s (default = 200 kb/s or '200k').
     def video_bitrate(bitrate)
-      FFMpegCommand << "-vb #{bitrate}"
+      FFMpegCommand << "-b:v #{bitrate}"
     end
 
     # Set the number of video frames to record.
@@ -167,9 +167,9 @@ module FFMpeg
       FFMpegCommand << "-vcodec #{codec}"
     end
 
-    # Use same quantizer as source (implies VBR).
+    # Use same quantizer as source (implies variable bitrate).
     # Note that this is NOT SAME QUALITY. Do not use this option unless you know you need it.
-    def same_video_quantifier
+    def same_quantizer
       FFMpegCommand << "-same_quant"
     end
 
