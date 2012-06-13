@@ -57,10 +57,17 @@ module FFMpeg
     return `exiftool -n -j #{opts[:to]}`
   end
 
+  # Get the video bitrate
+  def get_video_bitrate(from_file)
+    # line will look like: Duration: 00:00:46.54, start: 0.000000, bitrate: 3342 kb/s
+    line = `#{ffmpeg_path} -i #{from_file} 2>&1 | grep bitrate`
+    bitrate = line.match(/\d+/, line.index('bitrate'))[0]
+    return "#{bitrate}k"
+  end
+
   # Add a thumbnail for the video
   def add_thumbnail(from_file, to_file, width=480, height=360, frame=1)
-    @@ffmpeg_path ||= locate_ffmpeg
-    execute_command("#{@@ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
+    execute_command("#{ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
   end
 
   #
