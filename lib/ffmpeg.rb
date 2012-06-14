@@ -70,6 +70,37 @@ module FFMpeg
     execute_command("#{ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
   end
 
+  # Set up the video merge for a single video with named pipes
+  # Output_file should be an mpg file
+  def setup_merge(input_file, output_file, bitrate)
+    # create a temporary pipe; example: mkfifo 1.mpg
+    `mkfifo #{output_file}`
+
+    # put this command in a separate thread
+    Thread.new do
+      # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
+      execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -y #{output_file} < /dev/null")
+    end
+  end
+
+  # Execute the actual video merge
+  # video ids are the names of the videos in the output_dir
+  # Creates a new video called video.mp4 in output_dir
+  def execute_merge(output_dir, video_ids, bitrate)
+    # set up the cat command
+    cat_command = "cat"
+    video_ids.each { |video_id| cat_command += " #{output_dir}#{video_id}.mpg" }
+
+    # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -b:v 3342k -strict experimental new.mp4
+    execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -b:v #{bitrate} -strict experimental -y #{output_dir}video.mp4")
+
+    # clean up temporary pipes; example: rm 1.mpg
+    video_ids.each { |video_id| `rm #{output_dir}#{video_id}.mpg` }
+
+    # return the metadata in json format
+    return `exiftool -n -j #{output_dir}video.mp4`
+  end
+
   #
   # Explicitly set ffmpeg path
   #
