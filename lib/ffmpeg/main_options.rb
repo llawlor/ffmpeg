@@ -1,21 +1,21 @@
 module FFMpeg
   module MainOptions
-    
+
     def source(*filename)
       FFMpegCommand << "-i #{filename}"
     end
-    
+
     def target(target)
       FFMpegCommand << "#{target}"
     end
-    
+
     #
     # Overwrite output file if it already exists
     #
     def overwrite_existing_file
       FFMpegCommand.add_at("-y", 0)
     end
-    
+
     #
     # Set the duration specified in seconds.
     # hh:mm:ss[.xxx] syntax is also supported
@@ -29,7 +29,7 @@ module FFMpeg
     def duration(duration)
       FFMpegCommand << "-t #{duration}"
     end
-    
+
     #
     # Set a file size limit in bytes
     #
@@ -38,9 +38,9 @@ module FFMpeg
     def file_size_limit(limit)
       FFMpegCommand << "-fs #{limit.to_s}"
     end
-    
+
     #
-    # Seek to given time position in seconds. 
+    # Seek to given time position in seconds.
     # hh:mm:ss[.xxx] syntax is also supported.
     #
     #   seek "600"
@@ -52,13 +52,13 @@ module FFMpeg
     def seek(position)
       FFMpegCommand << "-ss #{position}"
     end
-    
+
     #
-    # Set the input time offset in seconds. 
-    # [-]hh:mm:ss[.xxx] syntax is also supported. 
-    # This option affects all the input files that follow it. 
-    # The offset is added to the timestamps of the input files. 
-    # Specifying a positive offset means that the corresponding 
+    # Set the input time offset in seconds.
+    # [-]hh:mm:ss[.xxx] syntax is also supported.
+    # This option affects all the input files that follow it.
+    # The offset is added to the timestamps of the input files.
+    # Specifying a positive offset means that the corresponding
     # streams are delayed by 'offset' seconds.
     #
     #   offset "600"
@@ -70,16 +70,16 @@ module FFMpeg
     def offset(offset)
       FFMpegCommand << "-itsoffset #{offset}"
     end
-    
+
     #
     # Set the title.
     #
     #   title "Some Title"
     #
-    def title(title)
-      FFMpegCommand << "-title '#{title}'"
-    end
-    
+    #def title(title)
+      #FFMpegCommand << "-title '#{title}'"
+    #end
+
     #
     # Set the author.
     #
@@ -88,16 +88,16 @@ module FFMpeg
     def author(author)
       FFMpegCommand << "-author '#{author}'"
     end
-    
+
     #
     # Set the copyright.
-    # 
+    #
     #   copyright "(c) Patrik Hedman 2009"
     #
     def copyright(copyright)
       FFMpegCommand << "-copyright '#{copyright}'"
     end
-    
+
     #
     # Set the comment.
     #
@@ -106,7 +106,7 @@ module FFMpeg
     def comment(comment)
       FFMpegCommand << "-comment '#{comment}'"
     end
-    
+
     #
     # Set the album.
     #
@@ -115,7 +115,7 @@ module FFMpeg
     def album(album)
       FFMpegCommand << "-album '#{album}'"
     end
-    
+
     #
     # Set the track number:
     #
@@ -124,20 +124,20 @@ module FFMpeg
     def track(track)
       FFMpegCommand << "-track #{track}"
     end
-    
-    # 
+
+    #
     # Set the year.
-    # 
+    #
     #   year 1985
-    # 
+    #
     def year(year)
       FFMpegCommand << "-year #{year}"
     end
-    
+
     #
-    # Specify target file type ("vcd", "svcd", "dvd", "dv", "dv50", "pal-vcd", "ntsc-svcd", ... ). 
+    # Specify target file type ("vcd", "svcd", "dvd", "dv", "dv50", "pal-vcd", "ntsc-svcd", ... ).
     # All the format options (bitrate, codecs, buffer sizes) are then set automatically.
-    # Nevertheless you can specify additional options as long as you know they do not conflict 
+    # Nevertheless you can specify additional options as long as you know they do not conflict
     # with the standard.
     #
     #   target "vcd"
@@ -145,7 +145,7 @@ module FFMpeg
     def target(target)
       FFMpegCommand << "-target #{target}"
     end
-    
+
     #
     # Set the number of frames to record.
     #
@@ -154,7 +154,7 @@ module FFMpeg
     def frames_to_record(frames)
       FFMpegCommand <<  "-dframes #{frames}"
     end
-    
+
     #
     # Force subtitle codec ('copy' to copy stream)
     #
@@ -163,3 +163,4 @@ module FFMpeg
     end
   end
 end
+
