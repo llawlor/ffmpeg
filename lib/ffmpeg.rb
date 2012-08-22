@@ -84,7 +84,9 @@ module FFMpeg
       # put this command in a separate thread
       Thread.new do
         # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
-        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -y #{mpg_files[index]} < /dev/null")
+        #execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -y #{mpg_files[index]} < /dev/null")
+        # set the correct target so that framerates are handled correctly
+        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -target ntsc-vcd -y #{mpg_files[index]} < /dev/null")
       end
     end
 
