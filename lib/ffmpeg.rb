@@ -70,6 +70,12 @@ module FFMpeg
     execute_command("#{ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
   end
 
+  # gets a specific attribute using exiftool
+  def exif_attribute(file, attribute)
+    json = `exiftool -n -j #{file}`
+    return JSON.parse(json)[0][attribute]
+  end
+
   # Execute the actual video merge
   # input_files should be an array of files with the path and filename
   # Creates a new video called video.mp4 in output_dir
@@ -78,15 +84,20 @@ module FFMpeg
     mpg_files = input_files.map { |input_file| "#{input_file[0..input_file.rindex('.')]}mpg" }
 
     input_files.each_with_index do |input_file, index|
+      framerate = exif_attribute(input_file, 'VideoFrameRate')
+
       # create a temporary pipe; example: mkfifo 1.mpg
       `mkfifo #{mpg_files[index]}`
 
       # put this command in a separate thread
+      # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
       Thread.new do
-        # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
-        #execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -y #{mpg_files[index]} < /dev/null")
-        # set the correct target so that framerates are handled correctly
-        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -target ntsc-vcd -y #{mpg_files[index]} < /dev/null")
+        # if framerate is below 20, set target differently
+        if framerate && framerate.to_i < 20
+          execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -target ntsc-vcd -y #{mpg_files[index]} < /dev/null")
+        else
+          execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -y #{mpg_files[index]} < /dev/null")
+        end
       end
     end
 
