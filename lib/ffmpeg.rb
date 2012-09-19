@@ -51,7 +51,7 @@ module FFMpeg
     end
 
     # run the command
-    execute_command("#{ffmpeg_path} #{FFMpegCommand.command}", opts[:verbose])
+    execute_command("#{ffmpeg_path} -y #{FFMpegCommand.command}", opts[:verbose])
 
     # return the metadata in json format
     return get_metadata(opts[:to])
