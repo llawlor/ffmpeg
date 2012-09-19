@@ -54,7 +54,7 @@ module FFMpeg
     execute_command("#{ffmpeg_path} #{FFMpegCommand.command}", opts[:verbose])
 
     # return the metadata in json format
-    return `exiftool -n -j #{opts[:to]}`
+    return get_metadata(opts[:to)
   end
 
   # Get the video bitrate
@@ -70,10 +70,14 @@ module FFMpeg
     execute_command("#{ffmpeg_path} -i #{from_file} -an -f rawvideo -s #{width}x#{height} -vframes #{frame} -vcodec png #{to_file}", false)
   end
 
+  # get all the metadata
+  def get_metadata(file)
+    return `exiftool -n -j #{file}`
+  end
+
   # gets a specific attribute using exiftool
   def exif_attribute(file, attribute)
-    json = `exiftool -n -j #{file}`
-    return JSON.parse(json)[0][attribute]
+    return JSON.parse(get_metadata(file))[0][attribute]
   end
 
   # Execute the actual video merge
@@ -112,7 +116,7 @@ module FFMpeg
     mpg_files.each { |mpg_file| `rm #{mpg_file}` }
 
     # return the metadata in json format
-    return `exiftool -n -j #{output_dir}video.mp4`
+    return get_metadata("#{output_dir}video.mp4")
   end
 
   #
