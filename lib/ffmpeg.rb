@@ -54,7 +54,7 @@ module FFMpeg
     execute_command("#{ffmpeg_path} #{FFMpegCommand.command}", opts[:verbose])
 
     # return the metadata in json format
-    return get_metadata(opts[:to)
+    return get_metadata(opts[:to])
   end
 
   # Get the video bitrate
