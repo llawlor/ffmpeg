@@ -57,12 +57,26 @@ module FFMpeg
     return get_metadata(opts[:to])
   end
 
+  # ffmpeg command to get the bitrate line
+  def bitrate_line(from_file)
+    `#{ffmpeg_path} -i #{from_file} 2>&1 | grep bitrate`
+  end
+
   # Get the video bitrate
   def get_video_bitrate(from_file)
     # line will look like: Duration: 00:00:46.54, start: 0.000000, bitrate: 3342 kb/s
-    line = `#{ffmpeg_path} -i #{from_file} 2>&1 | grep bitrate`
-    bitrate = line.match(/\d+/, line.index('bitrate'))[0]
-    return "#{bitrate}k"
+    line = bitrate_line(from_file)
+
+    # if line.index('bitrate') is nil, then error gets thrown: "no implicit conversion from nil to integer"
+    # just wait 5 seconds and try again, since file may be done by then
+    if line.index('bitrate').nil?
+      sleep 5
+      # try again
+      line = bitrate_line(from_file)
+    end
+
+    bitrate = line.match(/\d+/, line.index('bitrate'))[0] if line.index('bitrate')
+    return bitrate ? "#{bitrate}k" : nil
   end
 
   # Add a thumbnail for the video
