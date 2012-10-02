@@ -104,6 +104,8 @@ module FFMpeg
     input_files.each_with_index do |input_file, index|
       framerate = exif_attribute(input_file, 'VideoFrameRate')
 
+      # clean up temporary pipes in case they already exist
+      `rm #{mpg_files[index]}`
       # create a temporary pipe; example: mkfifo 1.mpg
       `mkfifo #{mpg_files[index]}`
 
@@ -123,6 +125,8 @@ module FFMpeg
     cat_command = "cat"
     mpg_files.each { |mpg_file| cat_command += " #{mpg_file}" }
 
+    # delete failed merge attempts if they exist
+    `rm #{output_dir}video.mp4`
     # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -b:v 3342k -strict experimental new.mp4
     execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -b:v #{bitrate} -s #{width}x#{height} -strict experimental -y #{output_dir}video.mp4")
 
