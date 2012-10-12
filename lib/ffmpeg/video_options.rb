@@ -65,6 +65,11 @@ module FFMpeg
       FFMpegCommand << "-s #{resolution}"
     end
 
+    # Set the size as WIDTHxHEIGHT
+    def video_size(size)
+      FFMpegCommand << "-s #{size}"
+    end
+
     # Set the video bitrate in bit/s (default = 200 kb/s or '200k').
     def video_bitrate(bitrate)
       FFMpegCommand << "-b:v #{bitrate}"

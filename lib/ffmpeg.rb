@@ -46,7 +46,8 @@ module FFMpeg
       opts[:to] = Presets[opts[:preset]][:extension]
     end
 
-    FFMpegCommand << set_target(from_file)
+    # copy audio (avoids errors when bitrate set too high)
+    FFMpegCommand << "-c:a copy"
 
     build_output_file_name(from_file, opts[:to]) do |file_name|
       FFMpegCommand << file_name
@@ -63,7 +64,7 @@ module FFMpeg
   def set_target(from_file)
     framerate = exif_attribute(from_file, 'VideoFrameRate')
     # if framerate is below 20, set target differently
-    return (framerate && framerate.to_i) ? '-target ntsc-vcd' : ''
+    return (framerate && framerate.to_i < 20) ? '-target ntsc-vcd' : ''
   end
 
   # ffmpeg command to get the bitrate line
