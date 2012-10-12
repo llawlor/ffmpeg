@@ -46,6 +46,8 @@ module FFMpeg
       opts[:to] = Presets[opts[:preset]][:extension]
     end
 
+    FFMpegCommand << set_target(from_file)
+
     build_output_file_name(from_file, opts[:to]) do |file_name|
       FFMpegCommand << file_name
     end
@@ -55,6 +57,13 @@ module FFMpeg
 
     # return the metadata in json format
     return get_metadata(opts[:to])
+  end
+
+  # set the target correctly (for low-framerate videos)
+  def set_target(from_file)
+    framerate = exif_attribute(from_file, 'VideoFrameRate')
+    # if framerate is below 20, set target differently
+    return (framerate && framerate.to_i) ? '-target ntsc-vcd' : ''
   end
 
   # ffmpeg command to get the bitrate line
@@ -102,7 +111,7 @@ module FFMpeg
     mpg_files = input_files.map { |input_file| "#{input_file[0..input_file.rindex('.')]}mpg" }
 
     input_files.each_with_index do |input_file, index|
-      framerate = exif_attribute(input_file, 'VideoFrameRate')
+      target = set_target(input_file)
 
       # clean up temporary pipes in case they already exist
       `rm #{mpg_files[index]}`
@@ -112,12 +121,7 @@ module FFMpeg
       # put this command in a separate thread
       # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
       Thread.new do
-        # if framerate is below 20, set target differently
-        if framerate && framerate.to_i < 20
-          execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -s #{width}x#{height} -target ntsc-vcd -y #{mpg_files[index]} < /dev/null")
-        else
-          execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -s #{width}x#{height} -y #{mpg_files[index]} < /dev/null")
-        end
+        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -s #{width}x#{height} #{target} -y #{mpg_files[index]} < /dev/null")
       end
     end
 
