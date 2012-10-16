@@ -104,18 +104,26 @@ module FFMpeg
     return JSON.parse(get_metadata(file))[0][attribute]
   end
 
+  # creates a random file name with the specified extension
+  def random_file_name(extension)
+    # use a large random number to avoid collisions
+    return "#{rand(999999999999999).to_s}.#{extension}"
+  end
+
   # Execute the actual video merge
   # input_files should be an array of files with the path and filename
   # Creates a new video called video.mp4 in output_dir
   def execute_merge(input_files, output_dir, bitrate, width=640, height=480)
-    # create array of temporary mpg_files by changing the extension
-    mpg_files = input_files.map { |input_file| "#{input_file[0..input_file.rindex('.')]}mpg" }
+    # create array of temporary mpg_files by using random names to prevent collisions
+    mpg_files = []
+    input_files.each do |input_file|
+      dir = input_file.rindex('/') ? input_file[0...input_file.rindex('/')] : ''
+      mpg_files << "#{dir}#{random_file_name('mpg')}"
+    end
 
     input_files.each_with_index do |input_file, index|
       target = set_target(input_file)
 
-      # clean up temporary pipes in case they already exist
-      `rm #{mpg_files[index]}`
       # create a temporary pipe; example: mkfifo 1.mpg
       `mkfifo #{mpg_files[index]}`
 
@@ -130,8 +138,6 @@ module FFMpeg
     cat_command = "cat"
     mpg_files.each { |mpg_file| cat_command += " #{mpg_file}" }
 
-    # delete failed merge attempts if they exist
-    `rm #{output_dir}video.mp4`
     # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -b:v 3342k -strict experimental new.mp4
     execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -b:v #{bitrate} -s #{width}x#{height} -strict experimental -y #{output_dir}video.mp4")
 
