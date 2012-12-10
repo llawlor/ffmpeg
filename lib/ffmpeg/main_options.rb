@@ -103,9 +103,9 @@ module FFMpeg
     #
     #   comment "Some comment"
     #
-    def comment(comment)
-      FFMpegCommand << "-comment '#{comment}'"
-    end
+    #def comment(comment)
+    #  FFMpegCommand << "-comment '#{comment}'"
+    #end
 
     #
     # Set the album.
