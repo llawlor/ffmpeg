@@ -114,6 +114,7 @@ module FFMpeg
   # input_files should be an array of files with the path and filename
   # Creates a new video called video.mp4 in output_dir
   def execute_merge(input_files, output_dir, bitrate, width=640, height=480)
+    threads = []
     # create array of temporary mpg_files by using random names to prevent collisions
     mpg_files = []
     input_files.each do |input_file|
@@ -124,15 +125,15 @@ module FFMpeg
     input_files.each_with_index do |input_file, index|
       target = set_target(input_file)
 
-      # create a temporary pipe; example: mkfifo 1.mpg
-      `mkfifo #{mpg_files[index]}`
-
       # put this command in a separate thread
-      # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg < /dev/null &
-      Thread.new do
-        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -s #{width}x#{height} #{target} -y #{mpg_files[index]} < /dev/null")
+      # set up the mpg temporary video; example: ffmpeg -i 1.mp4 -b:v 3342k 1.mpg
+      threads << Thread.new do
+        execute_command("#{ffmpeg_path} -i #{input_file} -b:v #{bitrate} -s #{width}x#{height} #{target} -y #{mpg_files[index]}")
       end
     end
+
+    # wait for all threads to finish
+    threads.each { |thread| thread.join }
 
     # set up the cat command
     cat_command = "cat"
@@ -141,7 +142,7 @@ module FFMpeg
     # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -b:v 3342k -strict experimental new.mp4
     execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -b:v #{bitrate} -s #{width}x#{height} -strict experimental -y #{output_dir}video.mp4")
 
-    # clean up temporary pipes; example: rm 1.mpg
+    # clean up temporary files; example: rm 1.mpg
     mpg_files.each { |mpg_file| `rm #{mpg_file}` }
 
     # return the metadata in json format
