@@ -139,8 +139,8 @@ module FFMpeg
     cat_command = "cat"
     mpg_files.each { |mpg_file| cat_command += " #{mpg_file}" }
 
-    # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -b:v 3342k -strict experimental new.mp4
-    execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -b:v #{bitrate} -s #{width}x#{height} -strict experimental -y #{output_dir}video.mp4")
+    # do the merge; example: cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -strict experimental new.mp4
+    execute_command("#{cat_command} | #{ffmpeg_path} -f mpeg -i - -s #{width}x#{height} -strict experimental -y #{output_dir}video.mp4")
 
     # clean up temporary files; example: rm 1.mpg
     mpg_files.each { |mpg_file| `rm #{mpg_file}` }
