@@ -20,13 +20,13 @@ module FFMpeg
     # Set the duration specified in seconds.
     # hh:mm:ss[.xxx] syntax is also supported
     #
-    #   duration "600"
+    #   video_duration "600"
     #
     # or
     #
-    #   duration "00:10:00"
+    #   video_duration "00:10:00"
     #
-    def duration(duration)
+    def video_duration(duration)
       FFMpegCommand << "-t #{duration}"
     end
 

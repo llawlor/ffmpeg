@@ -30,7 +30,7 @@ module FFMpeg
   #
   #  convert "file1.ext", :to => "file2.ext" do
   #    seek       "00:03:00"
-  #    duration   "01:10:00"
+  #    video_duration   "01:10:00"
   #    resolution "800x600"
   #  end
   #
